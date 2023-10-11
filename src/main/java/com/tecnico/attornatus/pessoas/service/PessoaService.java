@@ -3,7 +3,9 @@ package com.tecnico.attornatus.pessoas.service;
 import com.tecnico.attornatus.pessoas.domain.Endereco;
 import com.tecnico.attornatus.pessoas.domain.Pessoa;
 import com.tecnico.attornatus.pessoas.repository.PessoaDAO;
+import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
 import com.tecnico.attornatus.pessoas.service.dto.PessoaDTO;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +20,25 @@ public class PessoaService {
     PessoaDAO pessoaDAO;
 
     public void criarPessoa(PessoaDTO pessoaDTO) throws ParseException {
-        List<Endereco> enderecos = new ArrayList<>();
-
         Pessoa pessoa = new Pessoa(pessoaDTO.getNome(), pessoaDTO.getDataNascimento());
-        pessoaDTO.getEnderecos().forEach(enderecoDTO -> enderecos.add(enderecoDTO.toDomain()));
-        definirEnderecoPrincipal(enderecos);
-        pessoa.setEnderecos(enderecos);
+        pessoa.setEnderecos(converterEnderecos(pessoaDTO.getEnderecos()));
         pessoaDAO.save(pessoa);
     }
 
-    private void definirEnderecoPrincipal(List<Endereco> enderecos) {
-        enderecos.get(0).setPrincipal(true);
+    //TODO - AO ALTERAR A PESSOA, OS ENDEREÇOS QUE ANTES ERAM VINCULADOS A ESSE ID ESTÃO FICANDO COM "PESSOA_ID" -> EFETUAR CORREÇÃO"
+    public void editarPessoa(Integer id, PessoaDTO pessoaDTO) {
+        Pessoa pessoa = pessoaDAO.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException(Pessoa.class, "Pessoa não encontrada!"));
+
+        pessoa.setNome(pessoaDTO.getNome());
+        pessoa.setEnderecos(converterEnderecos(pessoaDTO.getEnderecos()));
+        pessoaDAO.save(pessoa);
     }
 
+    private List<Endereco> converterEnderecos(List<EnderecoDTO> enderecoDTOS) {
+        List<Endereco> enderecos = new ArrayList<>();
+        enderecoDTOS.forEach(enderecoDTO -> enderecos.add(enderecoDTO.toDomain()));
+        enderecos.get(0).setPrincipal(true);
+        return enderecos;
+    }
 }
