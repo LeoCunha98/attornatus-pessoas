@@ -2,14 +2,12 @@ package com.tecnico.attornatus.pessoas;
 
 import com.tecnico.attornatus.pessoas.domain.Endereco;
 import com.tecnico.attornatus.pessoas.domain.Pessoa;
-import com.tecnico.attornatus.pessoas.repository.EnderecoDAO;
 import com.tecnico.attornatus.pessoas.repository.PessoaDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -22,15 +20,12 @@ public class PessoasApplication implements CommandLineRunner {
 	@Autowired
 	PessoaDAO pessoaDAO;
 
-	@Autowired
-	EnderecoDAO enderecoDAO;
-
 	@Override
 	public void run(String... args) throws Exception {
-		Pessoa pessoa1 = new Pessoa("Leo", LocalDateTime.now());
+		Pessoa pessoa1 = new Pessoa("Leo", "09/01/1992");
 		pessoaDAO.save(pessoa1);
 
-		Pessoa pessoa2 = new Pessoa("Mazilao", LocalDateTime.now());
+		Pessoa pessoa2 = new Pessoa("Mazilao", "23/06/1995");
 		pessoaDAO.save(pessoa2);
 
 		Endereco endereco1 = new Endereco();
