@@ -4,7 +4,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/pessoas")
-public class PessoasController {
+@RequestMapping("/endereco")
+public class EnderecoResource {
+    public void criar() {
 
+    }
+
+    public void listar() {
+
+    }
+
+    public void principal() {
+
+    }
 }
