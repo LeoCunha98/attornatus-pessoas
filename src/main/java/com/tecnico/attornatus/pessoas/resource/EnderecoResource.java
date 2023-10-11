@@ -1,4 +1,4 @@
-package com.tecnico.attornatus.resource;
+package com.tecnico.attornatus.pessoas.resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
