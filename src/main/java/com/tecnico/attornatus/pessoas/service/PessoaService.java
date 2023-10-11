@@ -41,4 +41,10 @@ public class PessoaService {
         enderecos.get(0).setPrincipal(true);
         return enderecos;
     }
+
+    public PessoaDTO consultarPessoa(Integer id) {
+        Pessoa pessoa = pessoaDAO.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException(Pessoa.class, "Pessoa não encontrada!"));
+        return PessoaDTO.fromDomain(pessoa);
+    }
 }
