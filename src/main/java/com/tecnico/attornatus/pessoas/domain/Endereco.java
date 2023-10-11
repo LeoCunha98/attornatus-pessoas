@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -25,10 +23,7 @@ public class Endereco implements Serializable {
     //Boleano que define o endereço principal.
     private Boolean principal;
 
-    // Um endereço deve pertencer a 1 ou N pessoas
-    @ManyToMany
-    @JoinTable(name = "residentes",
-            joinColumns = @JoinColumn(name = "endereco_id"),
-            inverseJoinColumns = @JoinColumn(name = "pessoa_id"))
-    private List<Pessoa> residentes = new ArrayList<>();
+    // Um endereço deve pertencer a 1 pessoa
+    @ManyToOne
+    private Pessoa pessoa;
 }
