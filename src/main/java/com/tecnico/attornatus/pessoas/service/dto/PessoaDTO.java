@@ -25,4 +25,8 @@ public class PessoaDTO {
 
         return pessoaDTO;
     }
+
+    public void toDomain() {
+
+    }
 }
