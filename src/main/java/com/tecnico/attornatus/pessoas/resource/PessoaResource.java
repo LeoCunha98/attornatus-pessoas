@@ -11,9 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 @RestController
-@RequestMapping("/pessoa")
+@RequestMapping("/pessoas/")
 public class PessoaResource {
 
     @Autowired
@@ -37,7 +38,9 @@ public class PessoaResource {
         return ResponseEntity.ok(pessoa);
     }
 
-    public void listar() {
-
+    @GetMapping
+    public ResponseEntity<List<PessoaDTO>> listar() {
+        List<PessoaDTO> pessoas = pessoaService.consultarPessoas();
+        return ResponseEntity.ok(pessoas);
     }
 }

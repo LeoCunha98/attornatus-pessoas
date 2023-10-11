@@ -47,4 +47,10 @@ public class PessoaService {
                 new ObjectNotFoundException(Pessoa.class, "Pessoa não encontrada!"));
         return PessoaDTO.fromDomain(pessoa);
     }
+
+    public List<PessoaDTO> consultarPessoas() {
+        List<PessoaDTO> pessoasDTO = new ArrayList<>();
+        pessoaDAO.findAll().forEach(pessoa -> pessoasDTO.add(PessoaDTO.fromDomain(pessoa)));
+        return pessoasDTO;
+    }
 }
