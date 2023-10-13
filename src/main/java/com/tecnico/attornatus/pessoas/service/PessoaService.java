@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 //TODO - CRIAÇÃO DE TESTES UNITÁRIOS
@@ -27,7 +26,8 @@ public class PessoaService {
 
     public void criarPessoa(PessoaDTO pessoaDTO) throws ParseException {
         Pessoa pessoa = new Pessoa(pessoaDTO.getNome(), pessoaDTO.getDataNascimento());
-        pessoa.setEnderecos(converterEnderecos(pessoaDTO.getEnderecos()));
+        pessoa.setEnderecos(EnderecoDTO.toDomainList(pessoaDTO.getEnderecos()));
+
         pessoaDAO.save(pessoa);
     }
 
@@ -43,7 +43,7 @@ public class PessoaService {
         if(!pessoaDTO.getEnderecos().isEmpty()) {
             List<Endereco> enderecosAntigos = enderecoDAO.findAllByPessoaId(id);
             enderecosAntigos.forEach(end -> enderecoDAO.delete(end));
-            pessoa.setEnderecos(converterEnderecos(pessoaDTO.getEnderecos()));
+            pessoa.setEnderecos(EnderecoDTO.toDomainList(pessoaDTO.getEnderecos()));
         }
 
         pessoa.setNome(pessoaDTO.getNome());
@@ -58,13 +58,5 @@ public class PessoaService {
 
     public List<Pessoa> consultarPessoas() {
         return pessoaDAO.findAll();
-    }
-
-    //TODO - REAVALIAR NECESSIDADE
-    private List<Endereco> converterEnderecos(List<EnderecoDTO> enderecoDTOS) {
-        List<Endereco> enderecos = new ArrayList<>();
-        enderecoDTOS.forEach(enderecoDTO -> enderecos.add(enderecoDTO.toDomain()));
-        enderecos.get(0).setPrincipal(true);
-        return enderecos;
     }
 }

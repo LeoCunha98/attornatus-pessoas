@@ -1,8 +1,14 @@
 package com.tecnico.attornatus.pessoas.service.dto;
 
 import com.tecnico.attornatus.pessoas.domain.Endereco;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class EnderecoDTO {
@@ -23,6 +29,12 @@ public class EnderecoDTO {
     private String cidade;
 
     private Boolean principal = false;
+
+    public static List<Endereco> toDomainList(List<EnderecoDTO> enderecosDTO) {
+        List<Endereco> enderecos = new ArrayList<>();
+        enderecosDTO.forEach(enderecoDTO -> enderecos.add(enderecoDTO.toDomain()));
+        return enderecos;
+    }
 
     public static EnderecoDTO fromDomain(Endereco endereco) {
         EnderecoDTO enderecoDTO = new EnderecoDTO();
