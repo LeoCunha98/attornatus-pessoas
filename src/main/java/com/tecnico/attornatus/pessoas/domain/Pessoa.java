@@ -36,7 +36,12 @@ public class Pessoa implements Serializable {
 
     public Pessoa(String nome, String dataNascimento) throws ParseException {
         this.nome = nome;
+        setDataNascimento(dataNascimento);
+    }
+
+    public void setDataNascimento(String dataNascimento) throws ParseException {
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         this.dataNascimento = formato.parse(dataNascimento);
     }
+
 }
