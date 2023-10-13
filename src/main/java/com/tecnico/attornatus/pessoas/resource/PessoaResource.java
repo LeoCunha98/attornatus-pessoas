@@ -1,6 +1,8 @@
 package com.tecnico.attornatus.pessoas.resource;
 
+import com.tecnico.attornatus.pessoas.service.EnderecoService;
 import com.tecnico.attornatus.pessoas.service.PessoaService;
+import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
 import com.tecnico.attornatus.pessoas.service.dto.PessoaDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class PessoaResource {
 
     @Autowired
     PessoaService pessoaService;
+
+    @Autowired
+    EnderecoService enderecoService;
 
     @PostMapping
     public ResponseEntity<?> criar(@Valid @RequestBody PessoaDTO pessoaDTO) throws ParseException {
@@ -42,5 +47,23 @@ public class PessoaResource {
         List<PessoaDTO> pessoas = new ArrayList<>();
         pessoaService.consultarPessoas().forEach(pessoaDomain -> pessoas.add(PessoaDTO.fromDomain(pessoaDomain)));
         return ResponseEntity.ok(pessoas);
+    }
+
+    @PostMapping("{id}/endereco")
+    public ResponseEntity<?> criar(@PathVariable Long id, @RequestBody @Valid EnderecoDTO enderecoDTO) {
+        enderecoService.criarEndereco(id, enderecoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("{id}/enderecos")
+    public ResponseEntity<List<EnderecoDTO>> listar(@PathVariable Long id) {
+        List<EnderecoDTO> enderecos = new ArrayList<>();
+        enderecoService.listarEnderecos(id).forEach(end -> enderecos.add(EnderecoDTO.fromDomain(end)));
+        return ResponseEntity.ok(enderecos);
+    }
+
+    @GetMapping("{id}/endereco/principal")
+    public ResponseEntity<EnderecoDTO> principal(@PathVariable Long id) {
+        return ResponseEntity.ok(EnderecoDTO.fromDomain(enderecoService.buscarPrincipal(id)));
     }
 }
