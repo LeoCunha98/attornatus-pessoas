@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO - CRIAÇÃO DE TESTES UNITÁRIOS
 @Service
 public class PessoaService {
 
@@ -24,12 +25,16 @@ public class PessoaService {
     EnderecoDAO enderecoDAO;
 
 
+    //TODO - LANÇAR EXCEÇÃO PERSONALIZADA PARA CASO DE BAD REQUEST
     public void criarPessoa(PessoaDTO pessoaDTO) throws ParseException {
         Pessoa pessoa = new Pessoa(pessoaDTO.getNome(), pessoaDTO.getDataNascimento());
         pessoa.setEnderecos(converterEnderecos(pessoaDTO.getEnderecos()));
         pessoaDAO.save(pessoa);
     }
 
+
+    //TODO - LANÇAR EXCEÇÃO PERSONALIZADA PARA CASO DE BAD REQUEST
+    //TODO - LANÇAR EXCEÇÃO PERSONALIZADA PARA CASO DE OBJECT NOT FOUND
     public void editarPessoa(Long id, PessoaDTO pessoaDTO) throws ParseException {
         Pessoa pessoa = pessoaDAO.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException(Pessoa.class, "Pessoa não encontrada!"));
@@ -45,14 +50,7 @@ public class PessoaService {
         pessoaDAO.save(pessoa);
     }
 
-    //TODO - REAVALIAR NECESSIDADE
-    private List<Endereco> converterEnderecos(List<EnderecoDTO> enderecoDTOS) {
-        List<Endereco> enderecos = new ArrayList<>();
-        enderecoDTOS.forEach(enderecoDTO -> enderecos.add(enderecoDTO.toDomain()));
-        enderecos.get(0).setPrincipal(true);
-        return enderecos;
-    }
-
+    //TODO - LANÇAR EXCEÇÃO PERSONALIZADA EM CASO DE OBJECT NOT FOUND
     public Pessoa consultarPessoa(Long id) {
         return pessoaDAO.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException(Pessoa.class, "Pessoa não encontrada!"));
@@ -61,7 +59,12 @@ public class PessoaService {
     public List<Pessoa> consultarPessoas() {
         return pessoaDAO.findAll();
     }
-}
 
-// TODO - CRIAÇÃO DE EXCEÇÕES PERSONALIZADAS
-// TODO - CRIAÇÃO DE TESTES UNITÁRIOS
+    //TODO - REAVALIAR NECESSIDADE
+    private List<Endereco> converterEnderecos(List<EnderecoDTO> enderecoDTOS) {
+        List<Endereco> enderecos = new ArrayList<>();
+        enderecoDTOS.forEach(enderecoDTO -> enderecos.add(enderecoDTO.toDomain()));
+        enderecos.get(0).setPrincipal(true);
+        return enderecos;
+    }
+}

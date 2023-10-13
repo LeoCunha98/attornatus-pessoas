@@ -7,6 +7,10 @@ import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+//TODO - CRIAÇÃO DE TESTES UNITÁRIOS
+//TODO - AVALIAR POSSÍVEL INTEGRAÇÃO COM API PÚBLICA DE CEPS
 @Service
 public class EnderecoService {
     @Autowired
@@ -15,6 +19,8 @@ public class EnderecoService {
     @Autowired
     PessoaService pessoaService;
 
+    //TODO - TRATAR CASO EM QUE A PESSOA NÃO EXISTE -> LANÇAR EXCEÇÃO PERSONALIZADA OBJECT NOT FOUND (PESSOA)!
+    //TODO - LANÇAR EXCEÇÃO PERSONALIZADA PARA BAD REQUEST
     public void criarEndereco(Long pessoaId, EnderecoDTO enderecoDTO) {
         Pessoa pessoa = pessoaService.consultarPessoa(pessoaId);
 
@@ -36,7 +42,15 @@ public class EnderecoService {
         enderecoDAO.save(endereco);
     }
 
+
+    //TODO - TRATAR CASO EM QUE A PESSOA NÃO EXISTE
+    public List<Endereco> listarEnderecos(Long idPessoa) {
+        return enderecoDAO.findAllByPessoaId(idPessoa);
+    }
+
+    //TODO - TRATAR CASOS EM QUE A PESSOA NÃO EXISTE
     public Endereco buscarPrincipal(Long idPessoa) {
         return enderecoDAO.findByPessoaIdAndPrincipalTrue(idPessoa);
     }
+
 }
