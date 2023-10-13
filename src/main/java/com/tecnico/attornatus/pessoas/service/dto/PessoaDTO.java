@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,9 +26,12 @@ public class PessoaDTO {
     private List<EnderecoDTO> enderecos;
 
     public static PessoaDTO fromDomain(Pessoa pessoa) {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        Date dataNascimento = pessoa.getDataNascimento();
+
         PessoaDTO pessoaDTO = new PessoaDTO();
         pessoaDTO.setNome(pessoa.getNome());
-        pessoaDTO.setDataNascimento(pessoa.getDataNascimento().toString());
+        pessoaDTO.setDataNascimento(formato.format(dataNascimento));
         pessoaDTO.setId(pessoa.getId());
 
         List<EnderecoDTO> enderecoDTOS = new ArrayList<>();

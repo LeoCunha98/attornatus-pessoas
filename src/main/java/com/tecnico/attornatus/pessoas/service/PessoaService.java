@@ -56,7 +56,6 @@ public class PessoaService {
                 new ObjectNotFoundException("Pessoa não encontrada! Id: " + id));
     }
 
-    //TODO - AJUSTAR RETORNO NA DATA DE NASCIMENTO
     public List<Pessoa> consultarPessoas() {
         return pessoaDAO.findAll();
     }
