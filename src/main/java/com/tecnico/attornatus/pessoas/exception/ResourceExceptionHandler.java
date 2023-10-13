@@ -1,5 +1,6 @@
 package com.tecnico.attornatus.pessoas.exception;
 
+import com.tecnico.attornatus.pessoas.service.exception.NullArgumentException;
 import com.tecnico.attornatus.pessoas.service.exception.ObjectNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -41,9 +42,20 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
                 ex,
                 new StandardError(HttpStatusCode.valueOf(HttpStatus.NOT_FOUND.value()), ex.getMessage()),
                 new HttpHeaders(),
-                HttpStatus.UNAUTHORIZED,
+                HttpStatus.NOT_FOUND,
                 request
         );
     }
 
+    @ExceptionHandler(NullArgumentException.class)
+    public ResponseEntity<Object> nullArgumentException(NullArgumentException ex, WebRequest request) {
+
+        return handleExceptionInternal(
+                ex,
+                new StandardError(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()), ex.getMessage()),
+                new HttpHeaders(),
+                HttpStatus.BAD_REQUEST,
+                request
+        );
+    }
 }

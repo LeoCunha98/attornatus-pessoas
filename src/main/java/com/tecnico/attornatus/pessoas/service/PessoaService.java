@@ -2,11 +2,12 @@ package com.tecnico.attornatus.pessoas.service;
 
 import com.tecnico.attornatus.pessoas.domain.Endereco;
 import com.tecnico.attornatus.pessoas.domain.Pessoa;
-import com.tecnico.attornatus.pessoas.service.exception.ObjectNotFoundException;
 import com.tecnico.attornatus.pessoas.repository.EnderecoDAO;
 import com.tecnico.attornatus.pessoas.repository.PessoaDAO;
 import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
 import com.tecnico.attornatus.pessoas.service.dto.PessoaDTO;
+import com.tecnico.attornatus.pessoas.service.exception.NullArgumentException;
+import com.tecnico.attornatus.pessoas.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,15 @@ public class PessoaService {
         pessoaDAO.save(pessoa);
     }
 
-    //TODO - Alterar DTO para remoção de obrigatoriedade dos campos -> analisar uso de @VALID no Resource
     public void editarPessoa(Long id, PessoaDTO pessoaDTO) throws ParseException {
+        if(pessoaDTO.getNome() == null && pessoaDTO.getEnderecos() == null && pessoaDTO.getDataNascimento() == null) {
+            throw new NullArgumentException("É preciso enviar ao menos um campo para alteração.");
+        }
+
         Pessoa pessoa = pessoaDAO.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Pessoa não encontrada! Id: " + id));
 
+        //Exclusão de endereços antigos, mantendo apenas o(s) novo(s)
         if(!pessoaDTO.getEnderecos().isEmpty()) {
             List<Endereco> enderecosAntigos = enderecoDAO.findAllByPessoaId(id);
             enderecosAntigos.forEach(end -> enderecoDAO.delete(end));

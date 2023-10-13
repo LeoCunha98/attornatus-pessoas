@@ -26,7 +26,7 @@ public class PessoaResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@PathVariable Long id, @Valid @RequestBody PessoaDTO pessoaDTO) throws ParseException {
+    public ResponseEntity<?> editar(@PathVariable Long id, @RequestBody PessoaDTO pessoaDTO) throws ParseException {
         pessoaService.editarPessoa(id, pessoaDTO);
         return ResponseEntity.ok().build();
     }
