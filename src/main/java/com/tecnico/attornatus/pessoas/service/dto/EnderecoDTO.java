@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 public class EnderecoDTO {
 
+    private Long id;
+
     @NotBlank(message = "O logradouro deve ser informado.")
     private String logradouro;
 
@@ -22,8 +24,9 @@ public class EnderecoDTO {
 
     private Boolean principal = false;
 
-    public static EnderecoDTO fromDomain(Endereco endereco){
+    public static EnderecoDTO fromDomain(Endereco endereco) {
         EnderecoDTO enderecoDTO = new EnderecoDTO();
+        enderecoDTO.setId(endereco.getId());
         enderecoDTO.setLogradouro(endereco.getLogradouro());
         enderecoDTO.setCep(endereco.getCep());
         enderecoDTO.setNumero(endereco.getNumero());
