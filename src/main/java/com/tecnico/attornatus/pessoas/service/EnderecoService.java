@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//TODO - CRIAÇÃO DE TESTES UNITÁRIOS
 //TODO - AVALIAR POSSÍVEL INTEGRAÇÃO COM API PÚBLICA DE CEPS
 @Service
 public class EnderecoService {
@@ -58,7 +57,7 @@ public class EnderecoService {
 
         return enderecos
                 .stream()
-                .filter(end -> end.principal.equals(Boolean.TRUE)).findFirst()
+                .filter(end -> end != null && Boolean.TRUE.equals(end.getPrincipal())).findFirst()
                 .orElseThrow(() -> new ObjectNotFoundException("Não possui endereço principal. Id: " + idPessoa));
     }
 
