@@ -1,26 +1,31 @@
 package com.tecnico.attornatus.pessoas.exception;
 
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 public class StandardError implements Serializable {
-    private Integer status;
-    private String msg;
-    private Long timeStamp;
+    private HttpStatusCode status;
+    private List<String> errors;
+    private Long timestamp;
 
-    public StandardError(Integer status, String msg, Long timeStamp) {
+    public StandardError(HttpStatusCode status, List<String> errors) {
         super();
         this.status = status;
-
-        int indiceHashtag = msg.indexOf("#") + 1;
-        if (indiceHashtag != 0) {
-            this.msg = "[" + msg.substring(indiceHashtag);
-        } else {
-            this.msg = msg;
-        }
-        this.timeStamp = timeStamp;
+        this.errors = errors;
+        this.timestamp = System.currentTimeMillis();
     }
 
+    public StandardError(HttpStatusCode status, String error) {
+        super();
+        this.status = status;
+        this.timestamp = System.currentTimeMillis();
+        errors = Collections.singletonList(error);
+    }
 }

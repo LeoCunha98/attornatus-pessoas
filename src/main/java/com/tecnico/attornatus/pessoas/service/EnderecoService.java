@@ -2,6 +2,7 @@ package com.tecnico.attornatus.pessoas.service;
 
 import com.tecnico.attornatus.pessoas.domain.Endereco;
 import com.tecnico.attornatus.pessoas.domain.Pessoa;
+import com.tecnico.attornatus.pessoas.service.exception.ObjectNotFoundException;
 import com.tecnico.attornatus.pessoas.repository.EnderecoDAO;
 import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,6 @@ public class EnderecoService {
     @Autowired
     PessoaService pessoaService;
 
-    //TODO - TRATAR CASO EM QUE A PESSOA NÃO EXISTE -> LANÇAR EXCEÇÃO PERSONALIZADA OBJECT NOT FOUND (PESSOA)!
-    //TODO - LANÇAR EXCEÇÃO PERSONALIZADA PARA BAD REQUEST
     public void criarEndereco(Long pessoaId, EnderecoDTO enderecoDTO) {
         Pessoa pessoa = pessoaService.consultarPessoa(pessoaId);
 
@@ -29,7 +28,9 @@ public class EnderecoService {
         endereco.setCidade(enderecoDTO.getCidade());
         endereco.setNumero(enderecoDTO.getNumero());
         endereco.setCep(enderecoDTO.getCep());
+        endereco.setPrincipal(false);
 
+        //TODO - REFATORAR -> CONSULTANDO PESSOA DUAS VEZES NO BD
         if(enderecoDTO.getPrincipal()){
             endereco.setPrincipal(true);
             //Atualizar antigo endereço principal
@@ -42,15 +43,19 @@ public class EnderecoService {
         enderecoDAO.save(endereco);
     }
 
-
-    //TODO - TRATAR CASO EM QUE A PESSOA NÃO EXISTE
     public List<Endereco> listarEnderecos(Long idPessoa) {
-        return enderecoDAO.findAllByPessoaId(idPessoa);
+        Pessoa pessoa = pessoaService.consultarPessoa(idPessoa);
+        return pessoa.getEnderecos();
     }
 
-    //TODO - TRATAR CASOS EM QUE A PESSOA NÃO EXISTE
     public Endereco buscarPrincipal(Long idPessoa) {
-        return enderecoDAO.findByPessoaIdAndPrincipalTrue(idPessoa);
+        Pessoa pessoa = pessoaService.consultarPessoa(idPessoa);
+        List<Endereco> enderecos = pessoa.getEnderecos();
+
+        return enderecos
+                .stream()
+                .filter(end -> end.principal.equals(Boolean.TRUE)).findFirst()
+                .orElseThrow(() -> new ObjectNotFoundException("Não possui endereço principal. Id: " + idPessoa));
     }
 
 }
