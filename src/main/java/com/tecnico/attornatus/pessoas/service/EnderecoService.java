@@ -27,12 +27,16 @@ public class EnderecoService {
         if(enderecoDTO.getPrincipal()){
             endereco.setPrincipal(true);
             //Atualizar antigo endereço principal
-            Endereco antigoPrincipal = enderecoDAO.findByPessoaIdAndPrincipal(pessoaId, true);
+            Endereco antigoPrincipal = buscarPrincipal(pessoaId);
             antigoPrincipal.setPrincipal(false);
             enderecoDAO.save(antigoPrincipal);
         }
 
         endereco.setPessoa(pessoa);
         enderecoDAO.save(endereco);
+    }
+
+    public Endereco buscarPrincipal(Long idPessoa) {
+        return enderecoDAO.findByPessoaIdAndPrincipalTrue(idPessoa);
     }
 }

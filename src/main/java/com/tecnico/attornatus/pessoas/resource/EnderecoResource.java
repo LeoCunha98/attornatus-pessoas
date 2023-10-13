@@ -3,6 +3,7 @@ package com.tecnico.attornatus.pessoas.resource;
 import com.tecnico.attornatus.pessoas.service.EnderecoService;
 import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class EnderecoResource {
 
     //TODO - Buscar na lista de endereços da pessoa do Id desejado qual contém "principal: true" -> criar query
     @GetMapping("principal/{idPessoa}")
-    public void principal(@RequestParam Long idPessoa) {
-
+    public ResponseEntity<EnderecoDTO> principal(@PathVariable Long idPessoa) {
+        return ResponseEntity.ok(EnderecoDTO.fromDomain(enderecoService.buscarPrincipal(idPessoa)));
     }
 }
