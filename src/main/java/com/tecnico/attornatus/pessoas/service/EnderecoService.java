@@ -30,13 +30,17 @@ public class EnderecoService {
         endereco.setCep(enderecoDTO.getCep());
         endereco.setPrincipal(false);
 
-        //TODO - REFATORAR -> CONSULTANDO PESSOA DUAS VEZES NO BD
+        //Atualiza o endereço principal caso necessário (O endereço inserido é principal)
         if(enderecoDTO.getPrincipal()){
             endereco.setPrincipal(true);
-            //Atualizar antigo endereço principal
-            Endereco antigoPrincipal = buscarPrincipal(pessoaId);
-            antigoPrincipal.setPrincipal(false);
-            enderecoDAO.save(antigoPrincipal);
+
+            List<Endereco> enderecosAntigos = pessoa.getEnderecos();
+            Endereco antigoPrincipal = enderecosAntigos.stream().filter(Endereco::getPrincipal).findFirst().orElse(null);
+
+            if(antigoPrincipal != null) {
+                antigoPrincipal.setPrincipal(false);
+                enderecoDAO.save(antigoPrincipal);
+            }
         }
 
         endereco.setPessoa(pessoa);
