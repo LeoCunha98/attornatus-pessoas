@@ -1,47 +1,34 @@
 package com.tecnico.attornatus.pessoas.service;
 
+import com.google.gson.Gson;
+import com.tecnico.attornatus.pessoas.client.ClientUtils;
 import com.tecnico.attornatus.pessoas.domain.Endereco;
 import com.tecnico.attornatus.pessoas.domain.Pessoa;
-import com.tecnico.attornatus.pessoas.service.exception.ObjectNotFoundException;
 import com.tecnico.attornatus.pessoas.repository.EnderecoDAO;
 import com.tecnico.attornatus.pessoas.service.dto.EnderecoDTO;
+import com.tecnico.attornatus.pessoas.service.dto.EnderecoViaCepDTO;
+import com.tecnico.attornatus.pessoas.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//TODO - AVALIAR POSSÍVEL INTEGRAÇÃO COM API PÚBLICA DE CEPS
 @Service
 public class EnderecoService {
+
     @Autowired
     EnderecoDAO enderecoDAO;
 
     @Autowired
     PessoaService pessoaService;
 
-    public void criarEndereco(Long pessoaId, EnderecoDTO enderecoDTO) {
+    @Value("${viacep.endpoint}")
+    private String viaCepUrl;
+
+    public void criarEndereco(Long pessoaId, EnderecoDTO enderecoDTO) throws Exception {
         Pessoa pessoa = pessoaService.consultarPessoa(pessoaId);
-
-        Endereco endereco = new Endereco();
-        endereco.setLogradouro(enderecoDTO.getLogradouro());
-        endereco.setCidade(enderecoDTO.getCidade());
-        endereco.setNumero(enderecoDTO.getNumero());
-        endereco.setCep(enderecoDTO.getCep());
-        endereco.setPrincipal(false);
-
-        //Atualiza o endereço principal caso necessário (O endereço inserido é principal)
-        if(enderecoDTO.getPrincipal()){
-            endereco.setPrincipal(true);
-
-            List<Endereco> enderecosAntigos = pessoa.getEnderecos();
-            Endereco antigoPrincipal = enderecosAntigos.stream().filter(Endereco::getPrincipal).findFirst().orElse(null);
-
-            if(antigoPrincipal != null) {
-                antigoPrincipal.setPrincipal(false);
-                enderecoDAO.save(antigoPrincipal);
-            }
-        }
-
+        Endereco endereco = buildEndereco(pessoa, enderecoDTO, enderecoDTO.getPrincipal());
         endereco.setPessoa(pessoa);
         enderecoDAO.save(endereco);
     }
@@ -59,6 +46,41 @@ public class EnderecoService {
                 .stream()
                 .filter(end -> end != null && Boolean.TRUE.equals(end.getPrincipal())).findFirst()
                 .orElseThrow(() -> new ObjectNotFoundException("Não possui endereço principal. Id: " + idPessoa));
+    }
+
+    private Endereco buildEndereco(Pessoa pessoa, EnderecoDTO dto, boolean isPrincipal) throws Exception {
+        String url = viaCepUrl.replace("{cep}", dto.getCep());
+        String responseViaCep = ClientUtils.getHttpClientResponse(url);
+
+        Endereco resultado;
+        if(responseViaCep != null) {
+            Gson gson = new Gson();
+            resultado = gson.fromJson(responseViaCep, EnderecoViaCepDTO.class).toEndereco();
+            resultado.setNumero(dto.getNumero());
+            resultado.setCep(dto.getCep());
+            resultado.setPrincipal(false);
+        } else {
+            resultado = dto.toDomain();
+        }
+
+        if(isPrincipal) {
+            atualizarEnderecoPrincipal(pessoa, resultado);
+        }
+
+        return resultado;
+    }
+
+    public void atualizarEnderecoPrincipal(Pessoa pessoa, Endereco endereco) {
+        //Atualiza o endereço principal caso necessário (O endereço inserido é principal)
+        endereco.setPrincipal(true);
+
+        List<Endereco> enderecosAntigos = pessoa.getEnderecos();
+        Endereco antigoPrincipal = enderecosAntigos.stream().filter(Endereco::getPrincipal).findFirst().orElse(null);
+
+        if(antigoPrincipal != null) {
+            antigoPrincipal.setPrincipal(false);
+            enderecoDAO.save(antigoPrincipal);
+        }
     }
 
 }

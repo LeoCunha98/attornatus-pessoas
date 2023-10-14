@@ -50,7 +50,7 @@ public class PessoaResource {
     }
 
     @PostMapping("{id}/endereco")
-    public ResponseEntity<?> criar(@PathVariable Long id, @RequestBody @Valid EnderecoDTO enderecoDTO) {
+    public ResponseEntity<?> criar(@PathVariable Long id, @RequestBody @Valid EnderecoDTO enderecoDTO) throws Exception {
         enderecoService.criarEndereco(id, enderecoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

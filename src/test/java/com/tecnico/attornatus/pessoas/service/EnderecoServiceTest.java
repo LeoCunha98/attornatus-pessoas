@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +36,11 @@ public class EnderecoServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(enderecoService, "viaCepUrl", "http://viacep.com.br/ws/100000/json");
     }
 
     @Test
-    void testCriarEnderecoSucesso() {
+    void testCriarEnderecoSucesso() throws Exception {
         EnderecoDTO enderecoDTO = new EnderecoDTO();
         enderecoDTO.setLogradouro("Rua Teste");
         enderecoDTO.setCidade("Cidade Teste");
