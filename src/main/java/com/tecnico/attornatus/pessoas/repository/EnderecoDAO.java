@@ -8,5 +8,4 @@ import java.util.List;
 
 public interface EnderecoDAO extends JpaRepository<Endereco, Long> {
     List<Endereco> findAllByPessoaId(Long pessoaId);
-    Endereco findByPessoaIdAndPrincipalTrue(Long pessoaId);
 }

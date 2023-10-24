@@ -52,31 +52,30 @@ public class EnderecoService {
         String url = viaCepUrl.replace("{cep}", dto.getCep());
         String responseViaCep = ClientUtils.getHttpClientResponse(url);
 
-        Endereco resultado;
+        EnderecoViaCepDTO enderecoViaCepDTO;
+        Endereco resultado = new Endereco();
         if(responseViaCep != null) {
             Gson gson = new Gson();
-            resultado = gson.fromJson(responseViaCep, EnderecoViaCepDTO.class).toEndereco();
-            resultado.setNumero(dto.getNumero());
-            resultado.setCep(dto.getCep());
-            resultado.setPrincipal(false);
-        } else {
-            resultado = dto.toDomain();
+            enderecoViaCepDTO = gson.fromJson(responseViaCep, EnderecoViaCepDTO.class);
+            resultado.preencherEnderecoViaCep(enderecoViaCepDTO, dto);
+            atualizarEnderecoPrincipal(pessoa, resultado, dto.getPrincipal());
+            return resultado;
         }
 
-        if(isPrincipal) {
-            atualizarEnderecoPrincipal(pessoa, resultado);
-        }
-
+        resultado.preencherEnderecoViaDTO(dto);
+        atualizarEnderecoPrincipal(pessoa, resultado, dto.getPrincipal());
         return resultado;
     }
 
-    public void atualizarEnderecoPrincipal(Pessoa pessoa, Endereco endereco) {
-        //Atualiza o endereço principal caso necessário (O endereço inserido é principal)
+    private void atualizarEnderecoPrincipal(Pessoa pessoa, Endereco endereco, boolean isPrincipal) {
+        if(!isPrincipal) {
+            return;
+        }
+
         endereco.setPrincipal(true);
-
         List<Endereco> enderecosAntigos = pessoa.getEnderecos();
-        Endereco antigoPrincipal = enderecosAntigos.stream().filter(Endereco::getPrincipal).findFirst().orElse(null);
-
+        Endereco antigoPrincipal = enderecosAntigos.stream().filter(Endereco::getPrincipal)
+                .findFirst().orElse(null);
         if(antigoPrincipal != null) {
             antigoPrincipal.setPrincipal(false);
             enderecoDAO.save(antigoPrincipal);
